@@ -6,7 +6,6 @@ intents.message_content = True
 
 faqbot = commands.Bot(command_prefix='+', intents=intents)
 
-
 async def start():
     await faqbot.start(os.environ['BOT_FAQ_TOKEN'])
 
