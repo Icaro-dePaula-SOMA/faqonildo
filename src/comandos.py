@@ -4,17 +4,19 @@ import asyncio
 
 def configurar():
     @bot.command()
-    async def faq(ctx, nome_faq):
+    async def faq(ctx, faq_solicitado):
 
-        query = f"select descricao_old from faq where TITULO = '{nome_faq}'"
+        query = f"select titulo, descricao_old from faq where TITULO = '{faq_solicitado}' or titulo like '%{faq_solicitado}%'"
 
         cur.execute(query)
 
         await asyncio.sleep(1) 
 
-        try:
-            query = cur.fetchall()[0][0]
-        except:
-            await ctx.send(f"Não encontrei nenhum FAQ chamado {nome_faq}, tem certeza que o nome é esse?")
-        else:
-            await ctx.send(query)
+        query = cur.fetchall()
+        
+        if (not len(query)):
+            await ctx.send(f"Não encontrei nenhum FAQ chamado {faq_solicitado}, tem certeza que o nome é esse?")
+               
+        for faq in range(0, len(query)):
+            await ctx.send(f'```\n{query[faq][0]}:\n{query[faq][1]}\n```')
+
