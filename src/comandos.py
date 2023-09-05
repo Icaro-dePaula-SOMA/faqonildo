@@ -9,9 +9,9 @@ def configurar():
         busca = separar(busca)
 
         faq = select(busca)
-        
+
         resposta = tem_faq(faq, busca)
-        
+
         await asyncio.sleep(1) 
 
         await ctx.send(resposta)
