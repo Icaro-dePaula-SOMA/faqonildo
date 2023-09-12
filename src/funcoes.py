@@ -37,6 +37,18 @@ def corrige(texto):
         texto = texto.replace('&gt;', '>')
     except:
         pass
+
+    try:
+        texto = str(texto).replace('<img src="', '(')
+    except:
+        pass
+    else:
+        try:
+            texto = texto.replace('.png">', '.png)')
+        except:
+            texto = texto.replace('.jpg">', '.jpg)')
+        else:
+            pass
     
     cur.execute(f"select F_EDITA_DESC_FAQ('{texto}') from dual")
 
@@ -46,11 +58,12 @@ def corrige(texto):
 
 
 def tem_faq(faq, busca):
+
     if(faq == None):
         busca = juntar(busca)
         return f"""\nNão encontrei nenhum FAQ contendo "{busca}". Tenta denovo por favor."""
     
-    desc = corrige(faq[1])
+    desc = corrige(str(faq[1]))
 
     return f"""
 ### {faq[0]}\n
