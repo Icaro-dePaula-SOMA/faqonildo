@@ -41,18 +41,17 @@ def corrige(texto):
     cur.execute(f"select F_EDITA_DESC_FAQ('{texto}') from dual")
 
     texto = cur.fetchone()[0]
+
     return texto
 
 
 def tem_faq(faq, busca):
     if(faq == None):
         busca = juntar(busca)
-
         return f"""\nNão encontrei nenhum FAQ contendo "{busca}". Tenta denovo por favor."""
     
-    faq.append(corrige(faq[1]))
-    del(faq[1])
+    desc = corrige(faq[1])
 
     return f"""
 ### {faq[0]}\n
-{faq[1]}"""
+{desc}"""
