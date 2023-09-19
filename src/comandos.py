@@ -1,12 +1,14 @@
 from src.faqbot import bot
-from src.funcoes import separar, select, tem_faq
+from src.funcoes import separar, select, tem_faq, vazia
 import asyncio
-# from discord import SelectOption
 
 
 def configurar():
     @bot.command()
     async def faq(ctx, busca = ''):
+        if vazia(busca):
+            await ctx.send('Sua pesqusia está vazia, tenta denovo por favor.')
+
         busca = separar(busca)
 
         faq = select(busca)
@@ -20,9 +22,6 @@ def configurar():
             await ctx.send(parte)
 
 
-    # @bot.slash_command()
-    # async def teste(ctx, name:SelectOption(str, "Nome")):
-        
-    #     await ctx.respond("Por favor, insira seu input.")
-
-       
+    # @slash.slash(name="sla", description="Teste 1")
+    # async def sla(ctx):
+    #     await ctx.send('Bd!')

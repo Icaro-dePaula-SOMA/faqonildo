@@ -2,6 +2,11 @@ from src.ora import cur
 import re
 
 
+def vazia(busca):
+    if busca.isspace() or len(busca) == 0:
+        return 1
+
+
 def separar(busca):
     busca = busca.replace(',', ' ').split()
     busca = '}% and %{'.join(busca)
