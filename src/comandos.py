@@ -7,7 +7,7 @@ def configurar():
     @bot.command()
     async def faq(ctx, busca = ''):
         if vazia(busca):
-            await ctx.send('Sua pesqusia está vazia, tenta denovo por favor.')
+            await ctx.send('Sua pesquisa está vazia, tenta denovo por favor.')
 
         busca = separar(busca)
 
