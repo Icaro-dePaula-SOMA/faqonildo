@@ -1,0 +1,55 @@
+name: deploy
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  realiza-deploy:
+    name: Realiza o deploy do bot no servidor de build
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Instala os módulos necessários para o projeto funcionar
+        run: pip install -r requirements.txt
+
+      - name: Caso já tiver algum processo do bot em execução, o mesmo será parado
+        continue-on-error: true
+        run: pm2 stop SOMABotFAQonildo
+
+      - name: Inicia o processo do bot com as atualizações da versão
+        run: pm2 start main.py --name SOMABotFAQonildo
+
+  gera-release:
+    name: Gera a release e as notas de mudança (CHANGELOG.md)
+    runs-on: ubuntu-latest
+    needs: realiza-deploy
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Analisa os commits e define as notas de mudança (CHANGELOG.md)
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ secrets.RELEASE_PAT_TOKEN }}
+          tag: ${{ github.ref_name }}
+  
+      - name: Cria a release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          allowUpdates: true
+          draft: false
+          makeLatest: true
+          name: ${{ github.ref_name }}
+          body: ${{ steps.changelog.outputs.changes }}
+          token: ${{ secrets.RELEASE_PAT_TOKEN }}
+
+      - name: Commita o CHANGELOG.md com as notas de mudança
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: main
+          commit_message: 'docs: atualizar o CHANGELOG.md para a versão ${{ github.ref_name }}'
+          file_pattern: CHANGELOG.md
