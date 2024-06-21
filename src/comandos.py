@@ -20,10 +20,25 @@ def configurar():
                     msg_sem_faq = f"""\nNão encontrei nenhum FAQ contendo "{juntar_palavras_chave(palavras_chave_separadas)}" :thinking: Tenta denovo por favor."""
                     await interact.response.send_message(msg_sem_faq)
 
-                prefixo = f'{interact.user.name}, encontrei um FAQ que pode te ajudar :smiley: \n'         
+                prefixo = f'{interact.user.name}, encontrei um FAQ que pode te ajudar :smiley: \n###'
                 resposta = prefixo + formatar_faq(faq) 
 
-                await interact.response.send_message(resposta[0:1800])
+                qtde_char_prefixo = len(prefixo)
+                qtde_char_titulo = len(faq[0][0])
+                char_inicial_img_faq = faq[0][4] 
+                char_final_img_faq = faq[0][5]
+
+                #incompleta pendente terminar 
+
+                inicio_primeira_img_faq = qtde_char_prefixo + qtde_char_titulo + char_inicial_img_faq + 2
+                final_primeira_img_faq  = qtde_char_prefixo + qtde_char_titulo + char_final_img_faq + 1
+
+                print((resposta[inicio_primeira_img_faq:final_primeira_img_faq]).strip())
+
+                if inicio_primeira_img_faq < 1800:
+                    await interact.response.send_message(resposta[0:final_primeira_img_faq])
+                else:
+                    await interact.response.send_message(resposta[0:1800])
 
                 for i in range(1800, len(resposta), 1800):
                     fragmento = resposta[i:i + 1800]

@@ -29,7 +29,7 @@ def juntar_palavras_chave(busca):
 def selecionar_faq(palavras_chave_separadas):
     try:
         query = f"""with aux as (
-    select titulo, descricao from faq where cd_faq = (
+    select titulo, descricao, cd_faq from faq where cd_faq = (
         SELECT CD_FAQ FROM (
                             SELECT CD_FAQ, CONTAINS(XML_FAQ, '{palavras_chave_separadas}') score
                             FROM V_XML_FAQ
@@ -39,16 +39,23 @@ def selecionar_faq(palavras_chave_separadas):
         FETCH FIRST 1 ROW ONLY)
                 )
                 
-    select titulo, F_EDITA_DESC_FAQ(descricao) from aux"""
+    SELECT a.titulo,
+           F_EDITA_DESC_FAQ(a.descricao),
+           REGEXP_SUBSTR(F_EDITA_DESC_FAQ(a.descricao), 'http[s]?://[^ ,]+', 1, LEVEL) AS url,
+           LEVEL,
+           INSTR(F_EDITA_DESC_FAQ(a.descricao), 'http', 1, LEVEL) posicao_inicio,
+           INSTR(F_EDITA_DESC_FAQ(a.descricao), ' ', INSTR(F_EDITA_DESC_FAQ(a.descricao), 'http', 1, LEVEL)) posicao_fim 
+    FROM aux a
+    CONNECT BY INSTR(F_EDITA_DESC_FAQ(a.descricao), ' ', INSTR(F_EDITA_DESC_FAQ(a.descricao), 'http', 1, LEVEL)) > 0 """
         
         cur.execute(query)
-        return cur.fetchone()
+        return cur.fetchall()
     
     except:
         return None
-
-
+     
+   
 def formatar_faq(faq_selecionado):
-    return f"""### 
-{faq_selecionado[0]}\n
-{faq_selecionado[1]}"""
+    return f"""
+{faq_selecionado[0][0]}\n
+{faq_selecionado[0][1]}"""
