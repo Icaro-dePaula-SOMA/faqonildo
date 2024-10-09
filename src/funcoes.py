@@ -31,9 +31,9 @@ def selecionar_faq(palavras_chave_separadas):
         query = f"""with aux as (
     select titulo, descricao from faq where cd_faq = (
         SELECT CD_FAQ FROM (
-                            SELECT CD_FAQ, CONTAINS(XML_FAQ, '{palavras_chave_separadas}') score
-                            FROM V_XML_FAQ
-                            WHERE CONTAINS(XML_FAQ, '{palavras_chave_separadas}') > 0
+                            SELECT CD_FAQ, CONTAINS(XML_S2, '{palavras_chave_separadas}') score
+                            FROM V_S2_FAQ
+                            WHERE CONTAINS(XML_S2, '{palavras_chave_separadas}') > 0
                             order by score desc
                         )
         FETCH FIRST 1 ROW ONLY)
