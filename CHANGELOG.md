@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.0.5] - 2024-10-09
+### :bug: Bug Fixes
+- [`626641b`](https://github.com/Icaro-dePaula-SOMA/faqonildo/commit/626641b1bed0355ac56a8e647861094d4c738f38) - corrigir tabela de pesquisa do FAQonildo *(commit by [@Icaro-dePaula-SOMA](https://github.com/Icaro-dePaula-SOMA))*
+- [`42249a2`](https://github.com/Icaro-dePaula-SOMA/faqonildo/commit/42249a2b7f9917016ffc15da0fcc8414f365706c) - corrigir arquivo de deploy *(commit by [@Icaro-dePaula-SOMA](https://github.com/Icaro-dePaula-SOMA))*
+
+
 ## [v0.0.4] - 2024-06-21
 ### :sparkles: New Features
 - [`db83c67`](https://github.com/Icaro-dePaula-SOMA/faqonildo/commit/db83c67c071da173f8d8d0877430920826795207) - alterar a chave de execucao do bot para o servidor SOMA *(commit by [@Icaro-dePaula-SOMA](https://github.com/Icaro-dePaula-SOMA))*
@@ -18,3 +24,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [`2c624a9`](https://github.com/Icaro-dePaula-SOMA/faqonildo/commit/2c624a9f9894dbb936c09b7d96f685ea873d5cd2) - melhorar a legibilidade e a lógica do comando faq *(commit by [@Icaro-dePaula-SOMA](https://github.com/Icaro-dePaula-SOMA))*
 
 [v0.0.4]: https://github.com/Icaro-dePaula-SOMA/faqonildo/compare/v0.0.3...v0.0.4
+[v0.0.5]: https://github.com/Icaro-dePaula-SOMA/faqonildo/compare/v0.0.4...v0.0.5
