@@ -1,18 +1,49 @@
-name: deploy
+name: Gerar versão estável
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
+    inputs:
+      versao:
+        description: 'Número da Versão'
+        required: true
 permissions:
   contents: write
 jobs:
+  prepara:
+    name: Realiza a preparação e verificações para a geração da versão
+    runs-on: self-hosted
+    steps:
+      - name: Define algumas variáveis para trabalho
+        run: echo "VERSAO=v$("${{ github.event.inputs.versao }}".TrimStart("v"))" | Out-File -FilePath $env:GITHUB_ENV -Append
+      
+      - name: Verifica se o padrão do nome da versão está correto
+        run: verificar-nome-versao ${{ env.VERSAO }} estavel
+
+  versiona:
+    name: Versiona o projeto
+    runs-on: self-hosted
+    needs: prepara
+    steps:
+      - name: Define algumas variáveis para trabalho
+        run: echo "VERSAO=v$("${{ github.event.inputs.versao }}".TrimStart("v"))" | Out-File -FilePath $env:GITHUB_ENV -Append
+ 
+      - name: Atualiza o branch main para ficar igual o origin/main
+        run: git merge --ff-only origin/main
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Versiona o projeto
+        run: |         
+          git tag ${{ env.VERSAO }} -m "version: gerar a versão ${{ env.VERSAO }}"
+          git push -f origin main ${{ env.VERSAO }}
+
   realiza-deploy:
     name: Realiza o deploy do bot no servidor de build
     runs-on: self-hosted
+    needs: versiona
     steps:
-      - uses: actions/checkout@v3
-
       - name: Instala os módulos necessários para o projeto funcionar
         run: python.exe -m pip install --upgrade pip --user ; python.exe -m pip install --user -r requirements.txt
 
@@ -23,33 +54,39 @@ jobs:
       - name: Inicia o processo do bot com as atualizações da versão
         run: pm2 start main.py --name SOMABotFAQonildo
 
-  gera-release:
-    name: Gera a release e as notas de mudança (CHANGELOG.md)
-    runs-on: ubuntu-latest
+  gera-release-changelog:
+    name: Gera release e changelog
+    runs-on: self-hosted
     needs: realiza-deploy
     steps:
-      - uses: actions/checkout@v3
+      - name: Define algumas variáveis para trabalho
+        run: echo "VERSAO=v$("${{ github.event.inputs.versao }}".TrimStart("v"))" | Out-File -FilePath $env:GITHUB_ENV -Append
+      
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
 
       - name: Analisa os commits e define as notas de mudança (CHANGELOG.md)
         id: changelog
         uses: requarks/changelog-action@v1
         with:
           token: ${{ secrets.RELEASE_PAT_TOKEN }}
-          tag: ${{ github.ref_name }}
-  
+          tag: ${{ env.VERSAO }}
+
       - name: Cria a release
         uses: ncipollo/release-action@v1.12.0
         with:
           allowUpdates: true
           draft: false
           makeLatest: true
-          name: ${{ github.ref_name }}
+          tag: ${{ env.VERSAO }}
+          name: ${{ env.VERSAO }}
           body: ${{ steps.changelog.outputs.changes }}
-          token: ${{ secrets.RELEASE_PAT_TOKEN }}
+          token: ${{ secrets.RELEASE_PAT_TOKEN }}  
 
       - name: Commita o CHANGELOG.md com as notas de mudança
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          branch: main
-          commit_message: 'docs: atualizar o CHANGELOG.md para a versão ${{ github.ref_name }}'
-          file_pattern: CHANGELOG.md
+        run: |        
+          git add CHANGELOG.md
+          realizar-commit changelog ${{ env.VERSAO }}
+          git push origin main
