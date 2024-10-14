@@ -1,4 +1,4 @@
-# FAQonildo v1.0
+# FAQonildo v1.0.0
 
 ## Pré-Instalação
 ### Python
